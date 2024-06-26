@@ -113,10 +113,19 @@ func NewCommand() *cobra.Command {
 				os.Exit(1)
 			}
 
-			mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-				Scheme:                 scheme,
-				MetricsBindAddress:     metricsAddr,
-				Namespace:              watchedNamespace,
+			cfg := ctrl.GetConfigOrDie()
+			err = appv1alpha1.SetK8SConfigDefaults(cfg)
+			if err != nil {
+				log.Error(err, "Unable to apply K8s REST config defaults")
+				os.Exit(1)
+			}
+
+			mgr, err := ctrl.NewManager(cfg, ctrl.Options{
+				Scheme: scheme,
+				Metrics: metricsserver.Options{
+					BindAddress: metricsAddr,
+				},
+				Cache:                  cacheOpt,
 				HealthProbeBindAddress: probeBindAddr,
 				Port:                   9443,
 				LeaderElection:         enableLeaderElection,
