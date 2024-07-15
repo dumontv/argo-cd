@@ -121,11 +121,9 @@ func NewCommand() *cobra.Command {
 			}
 
 			mgr, err := ctrl.NewManager(cfg, ctrl.Options{
-				Scheme: scheme,
-				Metrics: metricsserver.Options{
-					BindAddress: metricsAddr,
-				},
-				Cache:                  cacheOpt,
+				Scheme:                 scheme,
+				MetricsBindAddress:     metricsAddr,
+				Namespace:              watchedNamespace,
 				HealthProbeBindAddress: probeBindAddr,
 				Port:                   9443,
 				LeaderElection:         enableLeaderElection,
